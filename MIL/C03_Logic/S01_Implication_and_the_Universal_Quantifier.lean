@@ -8,6 +8,7 @@ namespace C03S01
 #check ∀ x y ε : ℝ, 0 < ε → ε ≤ 1 → |x| < ε → |y| < ε → |x * y| < ε
 
 theorem my_lemma : ∀ x y ε : ℝ, 0 < ε → ε ≤ 1 → |x| < ε → |y| < ε → |x * y| < ε :=
+-- From my understanding of the book, this is not to be proved until later!
   sorry
 
 section
@@ -22,6 +23,7 @@ variable (ha : |a| < δ) (hb : |b| < δ)
 end
 
 theorem my_lemma2 : ∀ {x y ε : ℝ}, 0 < ε → ε ≤ 1 → |x| < ε → |y| < ε → |x * y| < ε :=
+-- also not meant to be proved yet
   sorry
 
 section
