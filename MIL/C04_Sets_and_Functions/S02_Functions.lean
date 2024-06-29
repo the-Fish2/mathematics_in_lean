@@ -34,54 +34,138 @@ example : s ⊆ f ⁻¹' (f '' s) := by
   use x, xs
 
 example : f '' s ⊆ v ↔ s ⊆ f ⁻¹' v := by
-  sorry
+  constructor <;> intros h j k
+  apply h
+  use j, k
+  rcases k with ⟨k1, k2, rfl⟩
+  apply h
+  exact k2
 
 example (h : Injective f) : f ⁻¹' (f '' s) ⊆ s := by
-  sorry
+  intro x k
+  rcases k with ⟨y, h1, h2⟩
+  apply h at h2
+  rw [h2] at h1
+  exact h1
 
 example : f '' (f ⁻¹' u) ⊆ u := by
-  sorry
+  intro x h
+  rcases h with ⟨y, h1, rfl⟩
+  exact h1
 
 example (h : Surjective f) : u ⊆ f '' (f ⁻¹' u) := by
-  sorry
+  intro x k
+  rcases h x with ⟨y, h1⟩
+  use y
+  constructor
+  show f y ∈ u
+  rw [h1]
+  exact k
+  exact h1
 
 example (h : s ⊆ t) : f '' s ⊆ f '' t := by
-  sorry
+  intro x ⟨a, h1, h2⟩
+  use a
+  constructor
+  apply h
+  exact h1
+  exact h2
 
 example (h : u ⊆ v) : f ⁻¹' u ⊆ f ⁻¹' v := by
-  sorry
+  intros x hu
+  show f x ∈ v
+  apply h
+  exact hu
 
 example : f ⁻¹' (u ∪ v) = f ⁻¹' u ∪ f ⁻¹' v := by
-  sorry
+  ext x
+  rfl
+  -- constructor <;> rintro (hu | hv)
+  -- left; exact hu
+  -- right; exact hv
+  -- left; exact hu
+  -- right; exact hv
+
 
 example : f '' (s ∩ t) ⊆ f '' s ∩ f '' t := by
-  sorry
+  intro x ⟨a, h1, h2⟩
+  rcases h1 with ⟨xs, xt⟩
+  constructor <;> use a
 
 example (h : Injective f) : f '' s ∩ f '' t ⊆ f '' (s ∩ t) := by
-  sorry
+  intro x ⟨⟨a, hsa, hax⟩, ⟨b, htb, hbx⟩⟩
+  use a
+  constructor
+  rw [← hbx] at hax
+  apply h at hax
+  rw [← hax] at htb
+  constructor
+  exact hsa
+  exact htb
+  exact hax
 
 example : f '' s \ f '' t ⊆ f '' (s \ t) := by
-  sorry
+  intro x ⟨⟨a, has, hax⟩ , hb⟩
+  use a
+  constructor
+  constructor
+  exact has
+  intro h; apply hb; use a; exact hax
 
 example : f ⁻¹' u \ f ⁻¹' v ⊆ f ⁻¹' (u \ v) := by
-  sorry
+  intro x ⟨xu, xv⟩
+  constructor
+  exact xu
+  exact xv
 
 example : f '' s ∩ v = f '' (s ∩ f ⁻¹' v) := by
-  sorry
+  ext x
+  constructor
+  rintro ⟨⟨a, as, rfl⟩, xv⟩
+  use a, ⟨as, xv⟩
+  -- constructor; constructor; exact as; exact xv; rfl
+  rintro ⟨a, ⟨as, av⟩, rfl⟩
+  constructor
+  use a, as
+  use av
 
 example : f '' (s ∩ f ⁻¹' u) ⊆ f '' s ∩ u := by
-  sorry
+  rintro x ⟨a, ⟨as, au⟩, ax⟩
+  constructor <;> rw [← ax]
+  use a
+  exact au
+
+-- note: consistent theme of me using constructors and then using individual parts
+-- vs in solutions, they just use exact <> and something
+-- will work on implementing that in last two
 
 example : s ∩ f ⁻¹' u ⊆ f ⁻¹' (f '' s ∩ u) := by
-  sorry
+  rintro x ⟨xs, xu⟩
+  exact ⟨⟨x, xs, rfl⟩, xu⟩
+  -- --show f x ∈ f '' s ∩ u
+  -- constructor
+  -- use x
+  -- exact xu
 
 example : s ∪ f ⁻¹' u ⊆ f ⁻¹' (f '' s ∪ u) := by
-  sorry
+  rintro x (hs | hu)
+  left; exact ⟨x, hs, rfl⟩
+  right; exact hu
 
 variable {I : Type*} (A : I → Set α) (B : I → Set β)
 
 example : (f '' ⋃ i, A i) = ⋃ i, f '' A i := by
-  sorry
+  ext x; simp
+  constructor
+  intro ⟨a, ⟨i, ai⟩, h2⟩
+  rw [← h2]
+  use i
+  use a
+  intro ⟨a, b, ⟨hba, hbx⟩⟩
+  use b
+  constructor
+  use a
+  exact hbx
 
 example : (f '' ⋂ i, A i) ⊆ ⋂ i, f '' A i := by
   sorry
