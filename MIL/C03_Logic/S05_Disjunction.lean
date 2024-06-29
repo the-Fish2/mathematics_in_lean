@@ -86,13 +86,25 @@ theorem abs_add (x y : ℝ) : |x + y| ≤ |x| + |y| := by
   · rw [abs_of_nonneg h]
     linarith
   · rw [abs_of_neg]
-    --previous statement wrong
-    -- linarith
-    -- exact h
-  sorry
+    linarith [neg_abs_le x, neg_abs_le y]
+    exact h
 
 theorem lt_abs : x < |y| ↔ x < y ∨ x < -y := by
-  sorry
+  rcases le_or_gt 0 y with h | h
+  constructor
+  · intro h2
+    left
+    rw [abs_of_nonneg h] at h2
+    apply h2
+  · intro h2
+    rcases h2 with h2 | h2
+    · rw [abs_of_nonneg h]
+      exact h2
+    · rw []
+      exact h2
+  constructor
+
+
 
 theorem abs_lt : |x| < y ↔ -y < x ∧ x < y := by
   sorry
