@@ -168,16 +168,55 @@ example : (f '' ⋃ i, A i) = ⋃ i, f '' A i := by
   exact hbx
 
 example : (f '' ⋂ i, A i) ⊆ ⋂ i, f '' A i := by
-  sorry
+  simp
+  rintro i a ha
+  use a
+  constructor
+  apply ha
+  simp
+  rfl
 
 example (i : I) (injf : Injective f) : (⋂ i, f '' A i) ⊆ f '' ⋂ i, A i := by
-  sorry
+  intro b
+  simp
+  intro h
+  rcases h i with ⟨a, ha, ab⟩
+  use a
+  constructor
+  intro i2
+  rcases h i2 with ⟨a2, ha2, ab2⟩
+  rw [← ab2] at ab
+  apply injf at ab
+  rw [← ab] at ha2
+  exact ha2
+  exact ab
 
 example : (f ⁻¹' ⋃ i, B i) = ⋃ i, f ⁻¹' B i := by
-  sorry
+  ext x
+  simp
+  -- Apparently simp is sufficient in this case! An alternate solution is below.
+
+  -- constructor <;> rintro ⟨b, hb⟩
+
+  -- simp at hb
+  -- rcases hb with ⟨⟨i, bi⟩, xb⟩
+  -- simp
+  -- use i
+  -- rw [← bi] at xb
+  -- exact xb
+
+  -- simp at hb
+  -- rcases hb with ⟨⟨i, bi⟩, xb⟩
+  -- simp
+  -- use i
+  -- rw [← bi] at xb
+  -- exact xb
 
 example : (f ⁻¹' ⋂ i, B i) = ⋂ i, f ⁻¹' B i := by
-  sorry
+  ext x
+  simp
+  --Huh! Ok.
+  --I guess this is because this somewhat follows by definition
 
 example : InjOn f s ↔ ∀ x₁ ∈ s, ∀ x₂ ∈ s, f x₁ = f x₂ → x₁ = x₂ :=
   Iff.refl _
@@ -207,16 +246,51 @@ example : range exp = { y | y > 0 } := by
   rw [exp_log ypos]
 
 example : InjOn sqrt { x | x ≥ 0 } := by
-  sorry
+  intro x xpos y ypos sq
+  calc x
+    _ = ( sqrt x )^2 := by rw [sq_sqrt xpos]
+    _ = ( sqrt y )^2 := by rw [sq]
+    _ = y := by rw [sq_sqrt ypos]
+
 
 example : InjOn (fun x ↦ x ^ 2) { x : ℝ | x ≥ 0 } := by
-  sorry
+  intro x xpos y ypos sq
+  simp at sq
+  calc x
+    _ = sqrt ( x^2 ) := by rw [sqrt_sq xpos]
+    _ = sqrt ( y^2 ) := by rw [sq]
+    _ = y := by rw [sqrt_sq ypos]
+
 
 example : sqrt '' { x | x ≥ 0 } = { y | y ≥ 0 } := by
-  sorry
+  simp
+  ext x
+  simp
+  constructor
+  rintro ⟨y, ⟨y₁, rfl⟩⟩
+  exact sqrt_nonneg y
+  intro h
+  use x^2
+  constructor
+  exact sq_nonneg x
+  exact sqrt_sq h
+  -- ext x
+  -- constructor
+  -- rintro ⟨y, ⟨y₁, rfl⟩⟩
+  -- simp
+  -- simp at y₁
+  -- exact sq_nonneg y₁
 
 example : (range fun x ↦ x ^ 2) = { y : ℝ | y ≥ 0 } := by
-  sorry
+  ext x
+  simp
+  constructor
+  rintro ⟨w, h⟩
+  rw [← h]
+  exact sq_nonneg w
+  intro h
+  use sqrt x
+  exact sq_sqrt h
 
 end
 
