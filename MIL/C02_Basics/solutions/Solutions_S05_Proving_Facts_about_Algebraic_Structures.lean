@@ -5,33 +5,37 @@ section
 variable {α : Type*} [Lattice α]
 variable (x y z : α)
 
-example : x ⊓ y = y ⊓ x := by
-  apply le_antisymm
-  repeat'
-    apply le_inf
-    · apply inf_le_right
-    apply inf_le_left
-
 example : x ⊓ y ⊓ z = x ⊓ (y ⊓ z) := by
   apply le_antisymm
   · apply le_inf
     · apply le_trans
       apply inf_le_left
       apply inf_le_left
+  sorry
+
+  --   apply le_inf
+  --   · apply le_trans
+  --     apply inf_le_left
+  --     apply inf_le_right
+  --   apply inf_le_right
+  -- apply le_inf
+  -- · apply le_inf
+  --   · apply inf_le_left
+  --   apply le_trans
+  --   apply inf_le_right
+  --   apply inf_le_left
+  -- apply le_trans
+  -- apply inf_le_right
+  -- apply inf_le_right
+
+
+
+example : x ⊓ y = y ⊓ x := by
+  apply le_antisymm
+  repeat'
     apply le_inf
-    · apply le_trans
-      apply inf_le_left
-      apply inf_le_right
-    apply inf_le_right
-  apply le_inf
-  · apply le_inf
-    · apply inf_le_left
-    apply le_trans
-    apply inf_le_right
+    · apply inf_le_right
     apply inf_le_left
-  apply le_trans
-  apply inf_le_right
-  apply inf_le_right
 
 example : x ⊔ y = y ⊔ x := by
   apply le_antisymm
@@ -131,4 +135,3 @@ example (x y : X) : 0 ≤ dist x y :=by
   linarith [dist_comm x y]
 
 end
-

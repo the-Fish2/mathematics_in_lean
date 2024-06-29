@@ -12,6 +12,12 @@ def f (x : ℕ) :=
 
 #check f
 
+-- Backslash n is not. Backslash N is the natural numbers set -- is comments
+def f2 (x : ℕ) :=
+  x + 3
+
+#check f2
+
 -- These are propositions, of type `Prop`.
 #check 2 + 2 = 4
 
@@ -54,4 +60,3 @@ example : ∀ m n : Nat, Even n → Even (m * n) := by
 
 example : ∀ m n : Nat, Even n → Even (m * n) := by
   intros; simp [*, parity_simps]
-

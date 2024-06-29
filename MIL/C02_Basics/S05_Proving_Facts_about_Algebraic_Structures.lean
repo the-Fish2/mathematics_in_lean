@@ -34,22 +34,76 @@ variable (x y z : α)
 #check (sup_le : x ≤ z → y ≤ z → x ⊔ y ≤ z)
 
 example : x ⊓ y = y ⊓ x := by
-  sorry
+  apply le_antisymm
+  apply le_inf
+  · apply inf_le_right
+  · apply inf_le_left
+
+  apply le_inf
+  · apply inf_le_right
+  · apply inf_le_left
 
 example : x ⊓ y ⊓ z = x ⊓ (y ⊓ z) := by
-  sorry
+  apply le_antisymm
+
+  apply le_inf
+  apply le_trans
+  apply inf_le_left
+  apply inf_le_left
+
+  apply le_inf
+
+  apply le_trans
+  apply inf_le_left
+  apply inf_le_right
+
+  apply le_trans
+  apply inf_le_right
+  apply le_refl
+
+  apply le_inf
+  apply le_inf
+
+  apply le_trans
+  apply inf_le_left
+  apply le_refl
+
+  apply le_trans
+  apply inf_le_right
+  apply inf_le_left
+
+  apply le_trans
+  apply inf_le_right
+  apply inf_le_right
 
 example : x ⊔ y = y ⊔ x := by
-  sorry
+  apply le_antisymm
+  apply sup_le
+  · apply le_sup_right
+  · apply le_sup_left
+
+  apply sup_le
+  · apply le_sup_right
+  · apply le_sup_left
 
 example : x ⊔ y ⊔ z = x ⊔ (y ⊔ z) := by
+-- I think there's not much point in doing it again. I just change le_inf to sup_le and so forth
+-- copy from two examples prior
   sorry
 
 theorem absorb1 : x ⊓ (x ⊔ y) = x := by
-  sorry
+  apply le_antisymm
+  apply inf_le_left
+  apply le_inf
+  apply le_refl
+  apply le_sup_left
 
 theorem absorb2 : x ⊔ x ⊓ y = x := by
-  sorry
+  apply le_antisymm
+  apply sup_le
+  apply le_refl
+  apply inf_le_left
+  apply le_sup_left
 
 end
 
@@ -68,6 +122,8 @@ variable {α : Type*} [Lattice α]
 variable (a b c : α)
 
 example (h : ∀ x y z : α, x ⊓ (y ⊔ z) = x ⊓ y ⊔ x ⊓ z) : a ⊔ b ⊓ c = (a ⊔ b) ⊓ (a ⊔ c) := by
+  rw [h]
+
   sorry
 
 example (h : ∀ x y z : α, x ⊔ y ⊓ z = (x ⊔ y) ⊓ (x ⊔ z)) : a ⊓ (b ⊔ c) = a ⊓ b ⊔ a ⊓ c := by
@@ -107,4 +163,3 @@ example (x y : X) : 0 ≤ dist x y := by
   sorry
 
 end
-
