@@ -109,15 +109,41 @@ example {x y : ℝ} (h : x ≤ y) : ¬y ≤ x ↔ x ≠ y := by
 example {x y : ℝ} (h : x ≤ y) : ¬y ≤ x ↔ x ≠ y :=
   ⟨fun h₀ h₁ ↦ h₀ (by rw [h₁]), fun h₀ h₁ ↦ h₀ (le_antisymm h h₁)⟩
 
-example {x y : ℝ} : x ≤ y ∧ ¬y ≤ x ↔ x ≤ y ∧ x ≠ y :=
-  sorry
+example {x y : ℝ} : x ≤ y ∧ ¬y ≤ x ↔ x ≤ y ∧ x ≠ y := by
+  constructor
+  rintro ⟨h₀, h₁⟩
+  constructor
+  · apply h₀
+  linarith
 
-theorem aux {x y : ℝ} (h : x ^ 2 + y ^ 2 = 0) : x = 0 :=
-  have h' : x ^ 2 = 0 := by sorry
-  pow_eq_zero h'
+  rintro ⟨h₀, h₁⟩
+  constructor
+  · apply h₀
+  contrapose! h₀
+  simp [lt_iff_le_and_ne]
+  constructor
+  apply h₀
+  intro h
+  apply h₁
+  rw [h]
 
-example (x y : ℝ) : x ^ 2 + y ^ 2 = 0 ↔ x = 0 ∧ y = 0 :=
-  sorry
+theorem aux {x y : ℝ} (h : x ^ 2 + y ^ 2 = 0) : x = 0 := by
+  have h' : x ^ 2 = 0 := by linarith [sq_nonneg x, sq_nonneg y]
+  apply pow_eq_zero h'
+
+example (x y : ℝ) : x ^ 2 + y ^ 2 = 0 ↔ x = 0 ∧ y = 0 := by
+  constructor
+
+  intro h
+  constructor
+  · apply aux h
+  rw [add_comm] at h
+  apply aux h
+
+  rintro ⟨h₀, h₁⟩
+  rw [h₀, h₁]
+  linarith
+-- norm_num
 
 section
 
@@ -138,7 +164,10 @@ theorem not_monotone_iff {f : ℝ → ℝ} : ¬Monotone f ↔ ∃ x y, x ≤ y �
   rfl
 
 example : ¬Monotone fun x : ℝ ↦ -x := by
-  sorry
+  rw [not_monotone_iff]
+  use 1
+  use 2
+  norm_num
 
 section
 variable {α : Type*} [PartialOrder α]
@@ -146,7 +175,19 @@ variable (a b : α)
 
 example : a < b ↔ a ≤ b ∧ a ≠ b := by
   rw [lt_iff_le_not_le]
-  sorry
+  constructor
+  rintro ⟨h₀, h₁⟩
+  constructor
+  · apply h₀
+  contrapose! h₁
+  exact Eq.le (id h₁.symm) -- from apply?
+
+  rintro ⟨h₀, h₁⟩
+  constructor
+  apply h₀
+  intro h₂
+  contrapose! h₁
+  apply le_antisymm h₀ h₂
 
 end
 
@@ -156,10 +197,17 @@ variable (a b c : α)
 
 example : ¬a < a := by
   rw [lt_iff_le_not_le]
-  sorry
+  rintro ⟨h₀, h₁⟩
+  contrapose! h₁
+  apply h₀
 
 example : a < b → b < c → a < c := by
   simp only [lt_iff_le_not_le]
-  sorry
+  intro h₀ h₁
+  constructor
+  apply le_trans h₀.left h₁.left
+  intro h₂
+  apply h₀.right
+  apply le_trans h₁.left h₂
 
 end
