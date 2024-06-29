@@ -20,6 +20,7 @@ example : ∃ x : ℝ, 2 < x ∧ x < 3 := by
 
 example : ∃ x : ℝ, 2 < x ∧ x < 3 :=
   have h : 2 < (5 : ℝ) / 2 ∧ (5 : ℝ) / 2 < 3 := by norm_num
+  -- anonymous constructor
   ⟨5 / 2, h⟩
 
 example : ∃ x : ℝ, 2 < x ∧ x < 3 :=
@@ -46,16 +47,32 @@ section
 variable {f g : ℝ → ℝ}
 
 example (ubf : FnHasUb f) (ubg : FnHasUb g) : FnHasUb fun x ↦ f x + g x := by
+-- rcases breaks down the hypothesis into components! useful
   rcases ubf with ⟨a, ubfa⟩
   rcases ubg with ⟨b, ubgb⟩
   use a + b
   apply fnUb_add ubfa ubgb
 
 example (lbf : FnHasLb f) (lbg : FnHasLb g) : FnHasLb fun x ↦ f x + g x := by
-  sorry
+  rcases lbf with ⟨a, lbfa⟩
+  rcases lbg with ⟨b, lbgb⟩
+  use a + b
+
+  intro x
+  dsimp
+  apply add_le_add
+  apply lbfa
+  apply lbgb
 
 example {c : ℝ} (ubf : FnHasUb f) (h : c ≥ 0) : FnHasUb fun x ↦ c * f x := by
-  sorry
+  rcases ubf with ⟨d, ubfd⟩
+  use c * d
+
+  intro x
+  dsimp
+  apply mul_le_mul_of_nonneg_left
+  apply ubfd
+  apply h
 
 example : FnHasUb f → FnHasUb g → FnHasUb fun x ↦ f x + g x := by
   rintro ⟨a, ubfa⟩ ⟨b, ubgb⟩
@@ -67,6 +84,7 @@ example : FnHasUb f → FnHasUb g → FnHasUb fun x ↦ f x + g x :=
 end
 
 example (ubf : FnHasUb f) (ubg : FnHasUb g) : FnHasUb fun x ↦ f x + g x := by
+-- also "destructs" arguments
   obtain ⟨a, ubfa⟩ := ubf
   obtain ⟨b, ubgb⟩ := ubg
   exact ⟨a + b, fnUb_add ubfa ubgb⟩
@@ -129,7 +147,10 @@ example (divab : a ∣ b) (divbc : b ∣ c) : a ∣ c := by
   use d * e; ring
 
 example (divab : a ∣ b) (divac : a ∣ c) : a ∣ b + c := by
-  sorry
+  rcases divab with ⟨d, beq, rfl⟩
+  rcases divac with ⟨e, ceq, rfl⟩
+  use d + e
+  ring
 
 end
 
@@ -143,7 +164,11 @@ example {c : ℝ} : Surjective fun x ↦ x + c := by
   dsimp; ring
 
 example {c : ℝ} (h : c ≠ 0) : Surjective fun x ↦ c * x := by
-  sorry
+  intro x
+  dsimp
+  use x/c
+  apply mul_div_cancel'
+  exact h
 
 example (x y : ℝ) (h : x - y ≠ 0) : (x ^ 2 - y ^ 2) / (x - y) = x + y := by
   field_simp [h]
@@ -163,6 +188,11 @@ variable {α : Type*} {β : Type*} {γ : Type*}
 variable {g : β → γ} {f : α → β}
 
 example (surjg : Surjective g) (surjf : Surjective f) : Surjective fun x ↦ g (f x) := by
-  sorry
+  intro x
+  dsimp
+  rcases surjg x with ⟨y, h, rfl⟩
+  rcases surjf y with ⟨z, h, rfl⟩
+  use z
+  -- rcases surjg with ⟨g, surjgh⟩
 
 end

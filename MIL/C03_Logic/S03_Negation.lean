@@ -32,10 +32,19 @@ example (h : ∀ a, ∃ x, f x > a) : ¬FnHasUb f := by
   have : f x ≤ a := fnuba x
   linarith
 
-example (h : ∀ a, ∃ x, f x < a) : ¬FnHasLb f :=
-  sorry
+example (h : ∀ a, ∃ x, f x < a) : ¬FnHasLb f := by
+  intro z
+  rcases z with ⟨a, fnlba⟩
+  rcases h a with ⟨b, h2⟩
+  have : f b ≥ a := fnlba b
+  linarith
 
-example : ¬FnHasUb fun x ↦ x :=
+example : ¬FnHasUb fun x ↦ x := by
+  rintro ⟨a, ha⟩
+  -- simp at ha
+  -- Confused: I understand how to prove this mathematically (ie assume there is an upper bound, prove ub + 1 can be reached by the code) but I'm not sure how to implement this - return soon!
+  have cont: a ≤ a + 1
+  -- linarith
   sorry
 
 #check (not_le_of_gt : a > b → ¬a ≤ b)
@@ -44,10 +53,18 @@ example : ¬FnHasUb fun x ↦ x :=
 #check (le_of_not_gt : ¬a > b → a ≤ b)
 
 example (h : Monotone f) (h' : f a < f b) : a < b := by
-  sorry
+  apply lt_of_not_ge
+  intro h2
+  apply h at h2
+  linarith
+  -- this one took a while.... still not entirely sure why rcases wasn't working here on h
 
 example (h : a ≤ b) (h' : f b < f a) : ¬Monotone f := by
-  sorry
+  intro h''
+  --it looks like rcases doesn't work on Monotone f
+  apply not_le_of_gt at h'
+  apply h'' at h
+  linarith
 
 example : ¬∀ {f : ℝ → ℝ}, Monotone f → ∀ {a b}, f a ≤ f b → a ≤ b := by
   intro h
@@ -136,4 +153,3 @@ example (h : 0 < 0) : a > 37 := by
   contradiction
 
 end
-
