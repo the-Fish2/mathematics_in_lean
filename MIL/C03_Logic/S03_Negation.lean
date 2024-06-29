@@ -40,11 +40,11 @@ example (h : ∀ a, ∃ x, f x < a) : ¬FnHasLb f := by
   linarith
 
 example : ¬FnHasUb fun x ↦ x := by
-  rintro ⟨a, ha⟩
-  -- simp at ha
-  -- Confused: I understand how to prove this mathematically (ie assume there is an upper bound, prove ub + 1 can be reached by the code) but I'm not sure how to implement this - return soon!
-  have cont: a ≤ a + 1
-  -- linarith
+  -- rintro ⟨a, ha⟩
+  -- -- simp at ha
+  -- -- Confused: I understand how to prove this mathematically (ie assume there is an upper bound, prove ub + 1 can be reached by the code) but I'm not sure how to implement this - return soon!
+  -- have cont: a ≤ a + 1
+  -- -- linarith
   sorry
 
 #check (not_le_of_gt : a > b → ¬a ≤ b)
@@ -69,29 +69,50 @@ example (h : a ≤ b) (h' : f b < f a) : ¬Monotone f := by
 example : ¬∀ {f : ℝ → ℝ}, Monotone f → ∀ {a b}, f a ≤ f b → a ≤ b := by
   intro h
   let f := fun x : ℝ ↦ (0 : ℝ)
-  have monof : Monotone f := by sorry
+  have monof : Monotone f := by
+    intro a b aleb
+    apply le_refl
+    -- simp only [le_refl]
+    -- linarith
   have h' : f 1 ≤ f 0 := le_refl _
-  sorry
+  have h'': 1 ≤ 0 := h monof h'
+  apply not_lt_of_ge at h''
+  -- have h''' : 0 < 1 := zero_lt_one
+  linarith
 
 example (x : ℝ) (h : ∀ ε > 0, x < ε) : x ≤ 0 := by
-  sorry
-
+  apply le_of_not_gt
+  intro h'
+  let e := x/2
+  have e_pos : e > 0 := half_pos h'
+  have x_lt_e : x < x/2 := h e e_pos
+  have e_lt_x : x/2 < x := half_lt_self h'
+  linarith
 end
 
 section
 variable {α : Type*} (P : α → Prop) (Q : Prop)
 
 example (h : ¬∃ x, P x) : ∀ x, ¬P x := by
-  sorry
+  intro a b
+  apply h
+  use a
 
 example (h : ∀ x, ¬P x) : ¬∃ x, P x := by
-  sorry
+  intro a
+  rcases a with ⟨w, p⟩
+  have h' : ¬ P w := h w
+  exact h' p
 
 example (h : ¬∀ x, P x) : ∃ x, ¬P x := by
+  -- proved below by exercise
   sorry
 
 example (h : ∃ x, ¬P x) : ¬∀ x, P x := by
-  sorry
+  intro a
+  rcases h with ⟨w, h⟩
+  apply h
+  apply a
 
 example (h : ¬∀ x, P x) : ∃ x, ¬P x := by
   by_contra h'
@@ -102,10 +123,13 @@ example (h : ¬∀ x, P x) : ∃ x, ¬P x := by
   exact h' ⟨x, h''⟩
 
 example (h : ¬¬Q) : Q := by
-  sorry
+  by_contra h'
+  exact h h'
 
 example (h : Q) : ¬¬Q := by
-  sorry
+  intro h'
+  exact h' h
+  -- why does exact h h' not work? probably because you need the neg symbol first...
 
 end
 
@@ -113,7 +137,15 @@ section
 variable (f : ℝ → ℝ)
 
 example (h : ¬FnHasUb f) : ∀ a, ∃ x, f x > a := by
-  sorry
+  intro a
+  by_contra x
+  apply h
+  use a
+  intro b
+  apply le_of_not_gt
+  intro h
+  apply x
+  use b
 
 example (h : ¬∀ a, ∃ x, f x > a) : FnHasUb f := by
   push_neg at h
@@ -125,7 +157,10 @@ example (h : ¬FnHasUb f) : ∀ a, ∃ x, f x > a := by
   exact h
 
 example (h : ¬Monotone f) : ∃ x y, x ≤ y ∧ f y < f x := by
-  sorry
+-- Took first line from solution.
+  rw [Monotone] at h
+  push_neg at h
+  exact h
 
 example (h : ¬FnHasUb f) : ∀ a, ∃ x, f x > a := by
   contrapose! h
