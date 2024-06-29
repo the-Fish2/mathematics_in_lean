@@ -1,1 +1,1 @@
-{"version":1,"references":{"c:Lean.warningAsError":{"usages":[[3,11,3,25]],"definition":null}},"module":"MIL.Common"}
+{"version":2,"references":{"c:Lean.warningAsError":{"usages":[[3,11,3,25]],"definition":null}},"module":"MIL.Common"}

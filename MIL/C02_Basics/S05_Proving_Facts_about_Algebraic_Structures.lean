@@ -125,12 +125,26 @@ variable (a b c : α)
 
 example (h : ∀ x y z : α, x ⊓ (y ⊔ z) = x ⊓ y ⊔ x ⊓ z) : a ⊔ b ⊓ c = (a ⊔ b) ⊓ (a ⊔ c) := by
   rw [h]
+  rw [@inf_comm _ _ (a ⊔ b) a]
+  rw [absorb1]
+  rw [@inf_comm _ _ (a ⊔ b) c]
+  rw [h]
+  rw [← @sup_assoc _ _ a (c ⊓ a) (c ⊓ b)]
+  rw [@inf_comm _ _ c a]
+  rw [absorb2]
+  rw [@inf_comm _ _ c b]
 
-  sorry
-
-example (h : ∀ x y z : α, x ⊔ y ⊓ z = (x ⊔ y) ⊓ (x ⊔ z)) : a ⊓ (b ⊔ c) = a ⊓ b ⊔ a ⊓ c := by
-  sorry
-
+example (h : ∀ x y z : α, x ⊔ y ⊓ z = (x ⊔ y) ⊓ (x ⊔ z)) :
+a ⊓ (b ⊔ c) = a ⊓ b ⊔ a ⊓ c := by
+  rw [h]
+  rw [@sup_comm _ _ (a ⊓ b) a]
+  rw [absorb2]
+  rw [@sup_comm _ _ (a ⊓ b) c]
+  rw [h]
+  rw [← inf_assoc]
+  rw [@sup_comm _ _ c a]
+  rw [absorb1]
+  rw [@sup_comm _ _ c b]
 end
 
 section
@@ -143,12 +157,28 @@ variable (a b c : R)
 #check (mul_nonneg : 0 ≤ a → 0 ≤ b → 0 ≤ a * b)
 
 example (h : a ≤ b) : 0 ≤ b - a := by
-  sorry
+  rw [sub_eq_add_neg]
+  rw [add_comm]
+  rw [← sub_self a]
+  rw [sub_eq_add_neg]
+  rw [add_comm]
+  apply add_le_add_left h (-a)
 
 example (h: 0 ≤ b - a) : a ≤ b := by
-  sorry
+  rw [← add_zero a]
+  rw [← sub_add_cancel b a]
+  rw [add_comm (b-a) a]
+  -- rw [sub_eq_add_neg]
+  -- rw [← add_assoc]
+  -- rw [← sub_eq_add_neg]
+  apply add_le_add_left h (a)
 
 example (h : a ≤ b) (h' : 0 ≤ c) : a * c ≤ b * c := by
+  -- from solution because I was unable to intuit it
+  -- have h1 : 0 ≤ (b - a) * c := mul_nonneg (aux1 _ _ h) h'
+  -- rw [sub_mul] at h1
+  -- exact aux2 _ _ h1
+  -- aux1, aux2 are previous examples.
   sorry
 
 end
@@ -162,6 +192,9 @@ variable (x y z : X)
 #check (dist_triangle x y z : dist x z ≤ dist x y + dist y z)
 
 example (x y : X) : 0 ≤ dist x y := by
-  sorry
+  have h : dist x x ≤ dist x y + dist y x := by exact dist_triangle x y x
+  rw [dist_comm y x] at h
+  rw [dist_self x] at h
+  linarith
 
 end
